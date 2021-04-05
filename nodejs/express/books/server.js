@@ -12,8 +12,11 @@ const flash = require('connect-flash');
 //
 // config
 //
-const iniFile = require('./parse-ini')();
-const dsns = Object.keys(iniFile);
+const userAtHost = process.env.USER_AT_HOST;
+if (!userAtHost) {
+  console.log('Expected user@host environment varibale to be set!')
+  process.exit(-1);
+}
 
 const PORT = 4000;
 const SECRET = crypto.randomBytes(32).toString('hex');
@@ -60,10 +63,7 @@ passport.use(new LocalStrategy(
         passReqToCallback: true
     },
     function(req, username, password, done) {
-        let { host, dsn } = req.body;
-        if (dsn) {
-            host = iniFile[dsn].System
-        }
+        let { host } = req.body;
         ibmi.processUserSignIn(host, username, password, function(err, user) {
             if (err) return done(`Error from ibmi signin: ${err}`, null);
             // save user record
