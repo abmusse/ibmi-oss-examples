@@ -13,7 +13,7 @@ function main {
         # ssh -L [LOCAL_IP:]LOCAL_PORT:DESTINATION:DESTINATION_PORT
         PORT_FWD_SSH_OPT="$PORT_FWD_SSH_OPT -L 0.0.0.0:$port:127.0.0.1:$port "
     done
-    autossh -vvv -M 9000 -i ./id_rsa -o StrictHostKeyChecking=no $PORT_FWD_SSH_OPT -N $USER_HOST_PAIR &
+    autossh -M 9000 -4 -i ./id_rsa -o StrictHostKeyChecking=no $PORT_FWD_SSH_OPT -N $USER_HOST_PAIR &
     $*
 }
 
@@ -24,7 +24,7 @@ case "$USER_HOST_PAIR" in
         main $@
     ;;
     *)
-        echo "$USAGE"
-        exit -1
+        echo "USER_AT_HOST env variable not set! Tunneling will not be started"
+        $*
     ;;
 esac
